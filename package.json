@@ -1,0 +1,31 @@
+{
+  "name": "s3-file-id",
+  "version": "1.0.0",
+  "description": "File ID is a unique identifier for a file. It is used to identify a file in a storage system and to delete it on storage (scheduled).",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "author": {
+    "email": "lynicis@protonmail.com",
+    "name": "Emre Sirmali",
+    "url": "https://github.com/lynicis"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lynicis/s3-file-id.git"
+  },
+  "homepage": "https://github.com/lynicis/s3-file-id",
+  "bugs": {
+    "url": "https://github.com/lynicis/s3-file-id/issues"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
