@@ -59,8 +59,9 @@ export default class FileId {
    * FileId.isValid("tmp_Zm9vLnR4dHxhYmNkZWYxMjM0NTY3OA==") // true
    * FileId.isValid("invalid-id") // false
    */
-  static isValid(fileId: any): boolean | Error {
+  static isValid(fileId: unknown): boolean | Error {
     if (fileId instanceof FileId) return true;
-    return isValid(fileId);
+    if (typeof fileId === "string") return isValid(fileId);
+    return false;
   }
 }

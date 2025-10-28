@@ -22,7 +22,7 @@ export default function isValid(fileId: string): boolean | Error {
   let decoded;
   try {
     decoded = Buffer.from(base64Payload, "base64").toString("utf8");
-  } catch (error) {
+  } catch {
     return new Error("invalid base64 encoding");
   }
 

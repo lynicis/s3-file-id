@@ -9,8 +9,8 @@ import { randomUUID } from "node:crypto";
  */
 function _sanitizeFilename(fileName: string): string {
   return fileName
-    .replace(/[\\/:*?"<>|\x00-\x1F]/g, "_")
-    .replace(/^\s+|\s+$/g, "");
+    .replace(/[\\/:*?"<>|\p{Cc}]/gu, "_")
+    .trim();
 }
 
 /**
