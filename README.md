@@ -1,10 +1,12 @@
-# File ID — File IDs for storage
+# S3 File ID
+
+> Generate secure, human-readable file identifiers for cloud storage systems
 
 [![npm version](https://img.shields.io/npm/v/s3-file-id.svg)](https://www.npmjs.com/package/s3-file-id) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![CI](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml/badge.svg)](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml)
 
-File ID generates compact, unique identifiers for files so you can safely store and delete objects in object storage (S3, MinIO, etc.). IDs are derived from the original filename plus a UUID to ensure uniqueness (2^128 collision resistance).
+File ID is a TypeScript library that generates compact, unique identifiers for files, making it safe and easy to manage objects in cloud storage systems like S3 and MinIO. Each ID combines the original filename with a UUID (2^128 collision resistance) for guaranteed uniqueness while maintaining human readability.
 
-## Table of contents
+## Table of Contents
 
 - Features
 - Quick start
@@ -17,75 +19,84 @@ File ID generates compact, unique identifiers for files so you can safely store 
 - Contributing
 - License & links
 
-## Features
+## Key Features
 
-- Generate deterministic, human-friendly file IDs that embed the original filename
-- Validate file IDs
-- Decode a file ID back to its original filename
-- Written in TypeScript with types included
+- 🔒 Secure and collision-resistant IDs using UUID v4
+- 📝 Human-readable format that preserves original filenames
+- ✨ Simple API for encoding, decoding, and validation
+- 📦 Full TypeScript support with included type definitions
+- 🚀 Zero dependencies and lightweight
 
-## Quick start
+## Installation
 
-Install the package and use the exported helpers:
+Install using your preferred package manager:
 
 ```bash
-pnpm add s3-file-id
-# or
+# Using npm
 npm install s3-file-id
+
+# Using pnpm
+pnpm add s3-file-id
+
+# Using Yarn
+yarn add s3-file-id
+
+# Using Bun
+bun add s3-file-id
 ```
 
-ESM example:
+## Quick Start
 
-```ts
+### ESM Usage
+
+```typescript
 import { encode, isValid, decode } from "s3-file-id";
 
 const id = encode("photo.png");
-console.log(id); // e.g. tmp_photo.png|550e8400-e29b-41d4-a716-446655440000
+// Result: tmp_photo.png|550e8400-e29b-41d4-a716-446655440000
 
 console.log(isValid(id)); // true
-console.log(decode(id)); // "photo.png"
+console.log(decode(id));  // "photo.png"
 ```
 
-CommonJS example:
+### CommonJS Usage
 
-```js
+```javascript
 const { encode, isValid, decode } = require("s3-file-id");
 
 const id = encode("report.pdf");
+// Result: tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f
 ```
 
-## Install
+## API Reference
 
-Supports popular JS package managers:
+### Function API
 
-- pnpm: `pnpm add s3-file-id`
-- npm: `npm install s3-file-id`
-- yarn: `yarn add s3-file-id`
-- bun: `bun add s3-file-id`
+#### `encode(filename: string): string`
 
-TypeScript types are included — no extra typings required.
+Creates a new file ID by combining the original filename with a UUID.
 
-## Usage
+- Returns: string — A file ID containing the original filename and a UUID.
 
-High-level helpers:
+#### `isValid(fileId: string | FileId): boolean`
 
-- encode(filename: string): string — create a new file ID
-- isValid(fileId: string | FileId): boolean — validate a file ID
-- decode(fileId: string | FileId): string — extract the original filename
+Validates if a given string or FileId object is a valid file ID.
 
-Example:
+- Returns: boolean — True when the ID matches the expected structure and contains a valid UUID.
 
-```ts
-import { encode, isValid, decode } from "s3-file-id";
+#### `decode(fileId: string | FileId): string`
 
-const fileId = encode("invoice-2025.pdf");
-if (!isValid(fileId)) throw new Error("invalid file id");
-console.log(decode(fileId)); // invoice-2025.pdf
-```
+Extracts the original filename from a file ID.
 
-### FileId class (object API)
+- Returns: string — The original filename embedded in the file ID.
 
-```ts
+### Class API
+
+#### `FileId`
+
+Object-oriented interface for file ID operations.
+
+```typescript
 import FileId from "s3-file-id";
 
 const obj = new FileId("notes.txt");
@@ -94,27 +105,17 @@ console.log(FileId.isValid(id));
 console.log(obj.decode());
 ```
 
-## API
+Methods:
 
-encode(filename: string): string
-- Returns: string — a file ID that contains the original filename and a UUID.
+* `constructor(filename: string)`: Creates a new FileId instance
+* `decode(): string`: Extracts the original filename
+* `static isValid(fileId: string | FileId): boolean`: Validates a file ID
 
-isValid(fileId: string | FileId): boolean
-- Returns: boolean — true when the ID matches the expected structure and contains a valid UUID.
-
-decode(fileId: string | FileId): string
-- Returns: string — the original filename embedded in the file ID.
-
-FileId class
-- constructor(filename: string)
-- decode(): string
-- static isValid(fileId: string | FileId): boolean
-
-## File ID format
+## File ID Format
 
 File IDs follow this pattern:
 
-```
+```text
 tmp_<original-file-name>|<uuid>
 ```
 
@@ -123,44 +124,30 @@ Examples:
 - `tmp_avatar.png|550e8400-e29b-41d4-a716-446655440000`
 - `tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f`
 
-## Tests
+## Development
 
-Run the test suite with your package manager of choice:
+### Running Tests
+
+The project includes a comprehensive test suite in `tests/fileId.test.ts`. Run it using:
 
 ```bash
-pnpm test
-# or
+# Using npm
 npm test
+
+# Using pnpm
+pnpm test
 ```
 
-The `tests/fileId.test.ts` file contains unit tests for encoding, decoding, and validation.
+### Contributing
 
-## Contributing
+We welcome contributions! Here's how you can help:
 
-Contributions are welcome. Suggested workflow:
-
-1. Fork the repo
+1. Fork the repository
 2. Create a feature branch
-3. Add tests for new behavior
+3. Add tests for new features
 4. Run the test suite
-5. Open a PR
-
-Consider adding a `CONTRIBUTING.md` and fill out issue templates for larger contributions.
+5. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License — see the `LICENSE` file for details.
-
-## Links
-
-- GitHub: https://github.com/lynicis/s3-file-id
-- npm: https://www.npmjs.com/package/s3-file-id
-
----
-
-If you'd like, I can also:
-
-- add a `CONTRIBUTING.md` with a basic PR checklist
-- add a Usage demo in the repository (small script under `examples/`)
-- run the test suite locally and report the results
-
+[MIT License](LICENSE) © 2025 Lynicis
