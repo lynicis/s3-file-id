@@ -16,7 +16,7 @@ import decode from "./decode";
  * }
  */
 export default class FileId {
-  readonly id: string;
+  public readonly id: string;
 
   /**
    * Create a new FileId instance
@@ -24,14 +24,14 @@ export default class FileId {
    * This constructor creates a new FileId instance by encoding the provided filename.
    * The encoded fileId will be stored internally and can be decoded later.
    *
-   * @param {string} fileId - The filename to encode into a FileId
+   * @param {string} filename - The filename to encode into a FileId
    * @returns {FileId} A new FileId instance containing the encoded filename
    * @example
    * const fileId = new FileId("test.txt")
    * console.log(fileId.fileId) // "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
    */
-  constructor(fileId: string) {
-    this.id = encode(fileId);
+  constructor(filename: string, private readonly prefix: string = "tmp") {
+    this.id = encode(filename, this.prefix);
     Object.setPrototypeOf(this, FileId.prototype);
   }
 
