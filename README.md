@@ -4,28 +4,23 @@
 
 [![npm version](https://img.shields.io/npm/v/s3-file-id.svg)](https://www.npmjs.com/package/s3-file-id) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![CI](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml/badge.svg)](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml)
 
-File ID is a TypeScript library that generates compact, unique identifiers for files, making it safe and easy to manage objects in cloud storage systems like S3 and MinIO. Each ID combines the original filename with a UUID (2^128 collision resistance) for guaranteed uniqueness while maintaining human readability.
+## Human-Readable File Access Pattern
+
+This library enables a simple and intuitive way to access files in cloud storage using human-readable names while maintaining uniqueness. Instead of managing complex paths or random identifiers, you can:
+
+- Reference files using their original names
+- Easily processed by scheduled jobs in the bucket
+- Maintain guaranteed uniqueness through UUID integration
+- Keep files organized and easily discoverable
+- Preserve human readability in your storage system
 
 ## Table of Contents
 
-- Features
-- Quick start
-- Install
-- Usage
-- API
-- FileId class
-- File ID format
-- Tests
-- Contributing
-- License & links
-
-## Key Features
-
-- 🔒 Secure and collision-resistant IDs using UUID v4
-- 📝 Human-readable format that preserves original filenames
-- ✨ Simple API for encoding, decoding, and validation
-- 📦 Full TypeScript support with included type definitions
-- 🚀 Zero dependencies and lightweight
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [API Reference](#api-reference)
+- [File ID Format](#file-id-format)
+- [Development](#development)
 
 ## Installation
 
@@ -107,9 +102,9 @@ console.log(obj.decode());
 
 Methods:
 
-* `constructor(filename: string)`: Creates a new FileId instance
-* `decode(): string`: Extracts the original filename
-* `static isValid(fileId: string | FileId): boolean`: Validates a file ID
+- `constructor(filename: string)`: Creates a new FileId instance
+- `decode(): string`: Extracts the original filename
+- `static isValid(fileId: string | FileId): boolean`: Validates a file ID
 
 ## File ID Format
 
@@ -137,17 +132,3 @@ npm test
 # Using pnpm
 pnpm test
 ```
-
-### Contributing
-
-We welcome contributions! Here's how you can help:
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new features
-4. Run the test suite
-5. Submit a pull request
-
-## License
-
-[MIT License](LICENSE) © 2025 Lynicis
