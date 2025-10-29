@@ -1,0 +1,6 @@
+.github/
+tests/
+.prettierrc
+.bun-version
+eslint.config.ts
+.gitignore
