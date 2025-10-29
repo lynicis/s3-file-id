@@ -1,5 +1,5 @@
 {
-  "name": "s3-file-id",
+  "name": "@linikis/file-id",
   "version": "1.0.0",
   "description": "File ID is a unique identifier for a file. It is used to identify a file in a storage system and to delete it on storage (scheduled).",
   "main": "index.ts",
@@ -18,11 +18,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lynicis/s3-file-id.git"
+    "url": "https://github.com/lynicis/file-id.git"
   },
-  "homepage": "https://github.com/lynicis/s3-file-id",
+  "homepage": "https://github.com/lynicis/file-id",
   "bugs": {
-    "url": "https://github.com/lynicis/s3-file-id/issues"
+    "url": "https://github.com/lynicis/file-id/issues"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
