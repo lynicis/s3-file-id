@@ -8,9 +8,7 @@ import { randomUUID } from "node:crypto";
  * @returns {string} // sanitized file name
  */
 function _sanitizeFilename(fileName: string): string {
-  return fileName
-    .replace(/[\\/:*?"<>|\p{Cc}]/gu, "_")
-    .trim();
+  return fileName.replace(/[\\/:*?"<>|\p{Cc}]/gu, "_").trim();
 }
 
 /**
@@ -36,7 +34,7 @@ function _sanitizeFilename(fileName: string): string {
  *    // Handle error right here
  * }
  */
-export default function encode(file: string, prefix = "tmp") : string {
+export default function encode(file: string, prefix = "tmp"): string {
   const sanitized = _sanitizeFilename(file);
   const uuid = randomUUID();
   const combined = `${sanitized}|${uuid}`;

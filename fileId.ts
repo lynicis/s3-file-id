@@ -1,4 +1,4 @@
-import isValid  from "./isValid";
+import isValid from "./isValid";
 import encode from "./encode";
 import decode from "./decode";
 
@@ -30,7 +30,10 @@ export default class FileId {
    * const fileId = new FileId("test.txt")
    * console.log(fileId.fileId) // "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
    */
-  constructor(filename: string, private readonly prefix: string = "tmp") {
+  constructor(
+    filename: string,
+    private readonly prefix: string = "tmp"
+  ) {
     this.id = encode(filename, this.prefix);
     Object.setPrototypeOf(this, FileId.prototype);
   }

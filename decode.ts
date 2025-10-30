@@ -20,4 +20,3 @@ export default function decode(fileId: string): string | undefined {
   fileId = fileId.substring(4);
   return Buffer.from(fileId, "base64").toString().split("|")[0];
 }
-

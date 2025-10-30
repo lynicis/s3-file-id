@@ -51,7 +51,7 @@ const id = encode("photo.png");
 // Result: tmp_photo.png|550e8400-e29b-41d4-a716-446655440000
 
 console.log(isValid(id)); // true
-console.log(decode(id));  // "photo.png"
+console.log(decode(id)); // "photo.png"
 ```
 
 ### CommonJS Usage

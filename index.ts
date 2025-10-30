@@ -4,8 +4,8 @@ import encode from "./encode";
 import FileId from "./fileId";
 
 export default {
-    FileId,
-    encode,
-    decode,
-    isValid,
-}
+  FileId,
+  encode,
+  decode,
+  isValid,
+};
