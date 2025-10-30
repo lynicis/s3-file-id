@@ -38,5 +38,32 @@ jobs:
       - name: Install dependencies
         run: bun ci
 
-      - name: Run tests
-        run: bun test
+      - name: Run tests for code coverage
+        run: bun test:coverage
+
+      - name: Upload test coverage output as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          slug: lynicis/s3-file-id
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run tests for report
+        run: bun test:report
+
+      - name: Upload test report as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit.xml
+          path: junit.xml
+
+      - name: Upload test report to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

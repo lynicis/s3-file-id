@@ -2,7 +2,10 @@
 
 > Generate secure, human-readable file identifiers for cloud storage systems
 
-[![npm version](https://img.shields.io/npm/v/s3-file-id.svg)](https://www.npmjs.com/package/s3-file-id) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![CI](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml/badge.svg)](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml)
+[![npm version](https://img.shields.io/npm/v/s3-file-id.svg)](https://www.npmjs.com/package/s3-file-id)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml/badge.svg)](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml)
+[![codecov](https://codecov.io/gh/lynicis/s3-file-id/branch/master/graph/badge.svg?token=ysKoyeIATm)](https://codecov.io/gh/lynicis/s3-file-id)
 
 ## Human-Readable File Access Pattern
 
