@@ -1,10 +1,8 @@
-# File ID
+# S3 File ID
 
 > Generate secure, human-readable file identifiers for cloud storage systems
 
-[![npm version](https://img.shields.io/npm/v/@linikis/file-id.svg)](https://www.npmjs.com/package/@linikis/file-id)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/lynicis/file-id/actions/workflows/npm-release.yaml/badge.svg)](https://github.com/lynicis/file-id/actions/workflows/npm-release.yaml)
+[![npm version](https://img.shields.io/npm/v/s3-file-id.svg)](https://www.npmjs.com/package/s3-file-id) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![CI](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml/badge.svg)](https://github.com/lynicis/s3-file-id/actions/workflows/npm-release.yaml)
 
 ## Human-Readable File Access Pattern
 
@@ -30,16 +28,16 @@ Install using your preferred package manager:
 
 ```bash
 # Using npm
-npm install @linikis/file-id
+npm install s3-file-id
 
 # Using pnpm
-pnpm add @linikis/file-id
+pnpm add s3-file-id
 
 # Using Yarn
-yarn add @linikis/file-id
+yarn add s3-file-id
 
 # Using Bun
-bun add @linikis/file-id
+bun add s3-file-id
 ```
 
 ## Quick Start
@@ -47,7 +45,7 @@ bun add @linikis/file-id
 ### ESM Usage
 
 ```typescript
-import { encode, isValid, decode } from "@linikis/file-id";
+import { encode, isValid, decode } from "s3-file-id";
 
 const id = encode("photo.png");
 // Result: tmp_photo.png|550e8400-e29b-41d4-a716-446655440000
@@ -59,7 +57,7 @@ console.log(decode(id));  // "photo.png"
 ### CommonJS Usage
 
 ```javascript
-const { encode, isValid, decode } = require("@linikis/file-id");
+const { encode, isValid, decode } = require("s3-file-id");
 
 const id = encode("report.pdf");
 // Result: tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f
@@ -94,7 +92,7 @@ Extracts the original filename from a file ID.
 Object-oriented interface for file ID operations.
 
 ```typescript
-import FileId from "@linikis/file-id";
+import FileId from "s3-file-id";
 
 const obj = new FileId("notes.txt");
 const id = obj.toString(); // same as encode("notes.txt")
