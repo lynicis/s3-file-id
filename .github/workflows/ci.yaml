@@ -42,13 +42,13 @@ jobs:
         run: bun test:coverage
 
       - name: Upload test coverage output as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           slug: lynicis/s3-file-id
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
         run: bun test:report
 
       - name: Upload test report as an artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit.xml
           path: junit.xml
