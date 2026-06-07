@@ -50,11 +50,19 @@ bun add s3-file-id
 ```typescript
 import { encode, isValid, decode } from "s3-file-id";
 
+// Without prefix (default)
 const id = encode("photo.png");
-// Result: tmp_photo.png|550e8400-e29b-41d4-a716-446655440000
+// Result: "photo.png|550e8400-e29b-41d4-a716-446655440000" (base64 encoded)
 
 console.log(isValid(id)); // true
 console.log(decode(id)); // "photo.png"
+
+// With optional prefix
+const tmpId = encode("photo.png", "tmp");
+// Result: "tmp_photo.png|550e8400-e29b-41d4-a716-446655440000" (base64 encoded)
+
+console.log(isValid(tmpId)); // true
+console.log(decode(tmpId)); // "photo.png"
 ```
 
 ### CommonJS Usage
@@ -62,19 +70,26 @@ console.log(decode(id)); // "photo.png"
 ```javascript
 const { encode, isValid, decode } = require("s3-file-id");
 
+// Without prefix (default)
 const id = encode("report.pdf");
-// Result: tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f
+// Result: "report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f" (base64 encoded)
+
+// With optional prefix
+const tmpId = encode("report.pdf", "tmp");
+// Result: "tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f" (base64 encoded)
 ```
 
 ## API Reference
 
 ### Function API
 
-#### `encode(filename: string): string`
+#### `encode(filename: string, prefix?: string | false): string`
 
 Creates a new file ID by combining the original filename with a UUID.
 
-- Returns: string — A file ID containing the original filename and a UUID.
+- `filename`: The original filename to encode
+- `prefix` (optional): Custom prefix for the file ID. Pass `false` or omit for no prefix (default), or provide a string like `"tmp"` for prefixed IDs
+- Returns: string — A file ID containing the base64-encoded filename and UUID
 
 #### `isValid(fileId: string | FileId): boolean`
 
@@ -97,15 +112,24 @@ Object-oriented interface for file ID operations.
 ```typescript
 import FileId from "s3-file-id";
 
+// Without prefix (default)
 const obj = new FileId("notes.txt");
-const id = obj.toString(); // same as encode("notes.txt")
-console.log(FileId.isValid(id));
-console.log(obj.decode());
+console.log(obj.id);        // "notes.txt|<uuid>" (base64 encoded)
+console.log(obj.decode());  // "notes.txt"
+
+// With optional prefix
+const tmpObj = new FileId("notes.txt", "tmp");
+console.log(tmpObj.id);     // "tmp_notes.txt|<uuid>" (base64 encoded)
+console.log(tmpObj.decode()); // "notes.txt"
+
+// With custom prefix
+const customObj = new FileId("notes.txt", "custom");
+console.log(customObj.id);  // "custom_notes.txt|<uuid>" (base64 encoded)
 ```
 
 Methods:
 
-- `constructor(filename: string)`: Creates a new FileId instance
+- `constructor(filename: string, prefix?: string | false)`: Creates a new FileId instance
 - `decode(): string`: Extracts the original filename
 - `static isValid(fileId: string | FileId): boolean`: Validates a file ID
 
@@ -114,13 +138,20 @@ Methods:
 File IDs follow this pattern:
 
 ```text
-tmp_<original-file-name>|<uuid>
+# Without prefix (default)
+<base64-encoded-filename>|<uuid>
+
+# With optional prefix
+<prefix>_<base64-encoded-filename>|<uuid>
 ```
 
-Examples:
+Examples (base64 encoded):
 
-- `tmp_avatar.png|550e8400-e29b-41d4-a716-446655440000`
-- `tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f`
+- `photo.png|550e8400-e29b-41d4-a716-446655440000` (no prefix)
+- `tmp_photo.png|550e8400-e29b-41d4-a716-446655440000` (with `tmp_` prefix)
+- `custom_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f` (with custom prefix)
+
+**Note:** Both prefixed and non-prefixed file IDs are fully supported and interchangeable. The `isValid()` and `decode()` functions accept either format.
 
 ## Development
 

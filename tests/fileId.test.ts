@@ -35,9 +35,19 @@ describe("FileId", () => {
     });
   });
   describe("constructor", () => {
-    it("should create a new FileId instance", () => {
+    it("should create a new FileId instance without prefix by default", () => {
       const filename = "test.txt";
       const fileId = new FileId(filename);
+
+      expect(fileId).toBeDefined();
+      expect(typeof fileId.id).toBe("string");
+      expect(fileId.id.startsWith("tmp_")).toBe(false);
+      expect(Buffer.from(fileId.id, "base64").toString()).toMatch(/test\.txt\|[a-f0-9-]{36}/);
+    });
+
+    it("should create a new FileId instance with tmp prefix", () => {
+      const filename = "test.txt";
+      const fileId = new FileId(filename, "tmp");
 
       expect(fileId).toBeDefined();
       expect(typeof fileId.id).toBe("string");
@@ -49,6 +59,13 @@ describe("FileId", () => {
       const fileId = new FileId(filename);
       expect(fileId).toBeDefined();
       expect(fileId.decode()).toBe("test@#$%^&_.txt");
+    });
+
+    it("should create FileId with custom prefix", () => {
+      const filename = "test.txt";
+      const fileId = new FileId(filename, "custom");
+      expect(fileId.id.startsWith("custom_")).toBe(true);
+      expect(fileId.decode()).toBe(filename);
     });
 
     it("should handle very long filename", () => {
@@ -127,13 +144,37 @@ describe("FileId", () => {
       expect(FileId.isValid("")).toBeInstanceOf(Error);
     });
 
-    it("should reject malformed tmp_ prefix", () => {
+    it("should reject malformed prefix (no underscore separator)", () => {
       expect(FileId.isValid("tmpx_something")).toBeInstanceOf(Error);
+    });
+
+    it("should reject malformed base64 after prefix", () => {
+      expect(FileId.isValid("tmp_notbase64!!!")).toBeInstanceOf(Error);
+    });
+
+    it("should accept file ID without prefix", () => {
+      const fileId = new FileId("test.txt");
+      expect(FileId.isValid(fileId.id)).toBe(true);
+    });
+
+    it("should accept file ID with tmp_ prefix", () => {
+      const fileId = new FileId("test.txt", "tmp");
+      expect(FileId.isValid(fileId.id)).toBe(true);
     });
 
     it("should reject object without proper FileId structure", () => {
       const fakeFileId = { id: "tmp_something" };
       expect(FileId.isValid(fakeFileId)).toBe(false);
+    });
+
+    it("should decode file ID without prefix", () => {
+      const fileId = new FileId("test.txt");
+      expect(fileId.decode()).toBe("test.txt");
+    });
+
+    it("should decode file ID with tmp_ prefix", () => {
+      const fileId = new FileId("test.txt", "tmp");
+      expect(fileId.decode()).toBe("test.txt");
     });
   });
 });

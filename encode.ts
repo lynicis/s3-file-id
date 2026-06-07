@@ -18,26 +18,25 @@ function _sanitizeFilename(fileName: string): string {
  * 1. Sanitizing the filename
  * 2. Appending a random UUID
  * 3. Base64 encoding the combined string
- * 4. Prefixing with 'tmp_' for temporary file tracking
+ * 4. Optionally prefixing with a custom prefix (default: no prefix)
  *
- * The resulting file ID format is: "tmp_<base64-encoded-string>" where the
- * base64 string contains "<sanitized-filename>|<uuid>"
+ * The resulting file ID format is:
+ * - With prefix: "<prefix>_<base64-encoded-string>"
+ * - Without prefix: "<base64-encoded-string>"
+ * The base64 string contains "<sanitized-filename>|<uuid>"
  *
  * @param {string} file - The filename to encode
- * @param {string} prefix - The prefix to use for the file ID (default: "tmp")
- * @returns {string} The encoded file ID, or false if encoding fails
+ * @param {string | false} prefix - The prefix to use for the file ID (default: false - no prefix)
+ * @returns {string} The encoded file ID
  * @throws {Error}
  * @example
- * try {
- *    encode("test.txt") // Returns "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
- * } catch (error) {
- *    // Handle error right here
- * }
+ * encode("test.txt") // Returns "dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
+ * encode("test.txt", "tmp") // Returns "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
  */
-export default function encode(file: string, prefix = "tmp"): string {
+export default function encode(file: string, prefix: string | false = false): string {
   const sanitized = _sanitizeFilename(file);
   const uuid = randomUUID();
   const combined = `${sanitized}|${uuid}`;
   const base64 = Buffer.from(combined, "utf8").toString("base64");
-  return `${prefix}_${base64}`;
+  return prefix ? `${prefix}_${base64}` : base64;
 }

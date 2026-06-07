@@ -28,11 +28,14 @@ export default class FileId {
    * @returns {FileId} A new FileId instance containing the encoded filename
    * @example
    * const fileId = new FileId("test.txt")
-   * console.log(fileId.fileId) // "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
+   * console.log(fileId.id) // "dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
+   *
+   * const tmpFileId = new FileId("test.txt", "tmp")
+   * console.log(tmpFileId.id) // "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
    */
   constructor(
     filename: string,
-    private readonly prefix: string = "tmp"
+    private readonly prefix: string | false = false
   ) {
     this.id = encode(filename, this.prefix);
     Object.setPrototypeOf(this, FileId.prototype);
