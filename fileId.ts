@@ -1,73 +1,58 @@
-import isValid from "./isValid";
-import encode from "./encode";
-import decode from "./decode";
+import type { IIdStrategy } from "./strategies/IIdStrategy";
+import { UUIDStrategy } from "./strategies/UUIDStrategy";
+
+const _defaultStrategy = new UUIDStrategy();
 
 /**
  * FileId is a unique identifier for a file.
- * This class provides an object-oriented interface for working with file IDs,
- * encapsulating encoding, decoding and validation functionality.
+ * Supports pluggable ID generation strategies (UUIDStrategy, SnowflakeStrategy, etc.)
  *
  * @public
  * @class
  * @example
+ * // Default (UUID strategy, backward compat)
  * const fileId = new FileId("test.txt");
- * if (FileId.isValid(fileId)) {
- *   const filename = fileId.decode();
- * }
+ * const prefixed = new FileId("test.txt", "tmp");
+ *
+ * // Snowflake strategy
+ * const sf = new FileId("test.txt", false, new SnowflakeStrategy({ workerId: 1 }));
  */
 export default class FileId {
   public readonly id: string;
 
-  /**
-   * Create a new FileId instance
-   *
-   * This constructor creates a new FileId instance by encoding the provided filename.
-   * The encoded fileId will be stored internally and can be decoded later.
-   *
-   * @param {string} filename - The filename to encode into a FileId
-   * @returns {FileId} A new FileId instance containing the encoded filename
-   * @example
-   * const fileId = new FileId("test.txt")
-   * console.log(fileId.id) // "dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
-   *
-   * const tmpFileId = new FileId("test.txt", "tmp")
-   * console.log(tmpFileId.id) // "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
-   */
   constructor(
     filename: string,
-    private readonly prefix: string | false = false
+    private readonly prefix: string | false = false,
+    private readonly strategy: IIdStrategy = _defaultStrategy
   ) {
-    this.id = encode(filename, this.prefix);
+    this.id = this.strategy.encode(filename, this.prefix);
     Object.setPrototypeOf(this, FileId.prototype);
   }
 
   /**
    * Decode the file id to get the original filename
    *
-   * CAUTION:
-   * This method should not be used without first validating the fileId using isValid().
-   * Invalid fileIds may cause errors or unexpected behavior.
+   * CAUTION: Validate with isValid() before calling this.
    *
-   * @returns {string} The original filename
-   * @throws {Error} If the fileId is invalid or cannot be decoded
+   * @returns {string | undefined} The original filename
    */
   decode(): string | undefined {
-    return decode(this.id);
+    return this.strategy.decode(this.id);
   }
 
   /**
-   * Check if the file id is valid
-   * Same as isValid function
+   * Check if the file id is valid (uses UUIDStrategy validation)
    *
-   * @param {string} fileId
-   * @returns {boolean}
+   * @param {unknown} fileId
+   * @returns {boolean | Error}
    * @example
-   * FileId.isValid("tmp_Zm9vLnR4dHxhYmNkZWYxMjM0NTY3OA==") // true
-   * FileId.isValid("invalid-id") // false
+   * FileId.isValid(new FileId("test.txt"))       // true
+   * FileId.isValid("tmp_dGVzdC50eHR8...")        // true | Error
+   * FileId.isValid(null)                          // false
    */
   static isValid(fileId: unknown): boolean | Error {
     if (fileId instanceof FileId) return true;
-    if (typeof fileId === "string") return isValid(fileId);
+    if (typeof fileId === "string") return _defaultStrategy.isValid(fileId);
     return false;
   }
 }
