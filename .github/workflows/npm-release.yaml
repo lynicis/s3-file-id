@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -24,6 +24,10 @@ jobs:
         run: bun ci
 
       - name: Publish to NPM
-        run: bun publish --access=public
+        run: |
+          bun publish \
+            --tolerate-republish \
+            --production \
+            --access='public'
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
