@@ -13,7 +13,7 @@ This library enables a simple and intuitive way to access files in cloud storage
 
 - Reference files using their original names
 - Easily processed by scheduled jobs in the bucket
-- Maintain guaranteed uniqueness through UUID integration
+- Maintain guaranteed uniqueness through pluggable ID strategies (UUID or Snowflake)
 - Keep files organized and easily discoverable
 - Preserve human readability in your storage system
 
@@ -21,6 +21,7 @@ This library enables a simple and intuitive way to access files in cloud storage
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Strategies](#strategies)
 - [API Reference](#api-reference)
 - [File ID Format](#file-id-format)
 - [Development](#development)
@@ -50,16 +51,16 @@ bun add s3-file-id
 ```typescript
 import { encode, isValid, decode } from "s3-file-id";
 
-// Without prefix (default)
+// Without prefix (uses default UUID strategy)
 const id = encode("photo.png");
-// Result: "photo.png|550e8400-e29b-41d4-a716-446655440000" (base64 encoded)
+// Result: base64("photo.png|550e8400-e29b-41d4-a716-446655440000")
 
 console.log(isValid(id)); // true
 console.log(decode(id)); // "photo.png"
 
 // With optional prefix
 const tmpId = encode("photo.png", "tmp");
-// Result: "tmp_photo.png|550e8400-e29b-41d4-a716-446655440000" (base64 encoded)
+// Result: "tmp_" + base64("photo.png|550e8400-e29b-41d4-a716-446655440000")
 
 console.log(isValid(tmpId)); // true
 console.log(decode(tmpId)); // "photo.png"
@@ -70,38 +71,52 @@ console.log(decode(tmpId)); // "photo.png"
 ```javascript
 const { encode, isValid, decode } = require("s3-file-id");
 
-// Without prefix (default)
 const id = encode("report.pdf");
-// Result: "report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f" (base64 encoded)
+// Result: base64("report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f")
+```
 
-// With optional prefix
-const tmpId = encode("report.pdf", "tmp");
-// Result: "tmp_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f" (base64 encoded)
+## Strategies
+
+In `v3.0.0`, ID generation is pluggable via the Strategy Pattern. The default behavior still uses UUID v4, but a 64-bit BigInt **Snowflake** ID strategy is also included for distributed systems demanding ordered, time-sortable identifiers without collisions.
+
+### UUID Strategy (Default)
+Standard `crypto.randomUUID()` based collision-free strings.
+
+```typescript
+import FileId, { UUIDStrategy } from "s3-file-id";
+
+const id = new FileId("test.txt", false, new UUIDStrategy()); 
+// Equivalent to `new FileId("test.txt")`
+```
+
+### Snowflake Strategy
+A 64-bit ID utilizing a custom epoch, worker ID, and datacenter ID to produce sortable unique numeric strings (`17-19` digits).
+
+```typescript
+import FileId, { SnowflakeStrategy } from "s3-file-id";
+
+// Uses process.env.SNOWFLAKE_WORKER_ID and process.env.SNOWFLAKE_DATACENTER_ID natively
+const strategy = new SnowflakeStrategy({ workerId: 1, datacenterId: 2 });
+const sf = new FileId("test.txt", false, strategy);
+console.log(sf.id); 
+// base64("test.txt|1234567890123456789")
 ```
 
 ## API Reference
 
-### Function API
+### Function API (Uses UUIDStrategy by default)
 
 #### `encode(filename: string, prefix?: string | false): string`
-
 Creates a new file ID by combining the original filename with a UUID.
 
 - `filename`: The original filename to encode
-- `prefix` (optional): Custom prefix for the file ID. Pass `false` or omit for no prefix (default), or provide a string like `"tmp"` for prefixed IDs
-- Returns: string — A file ID containing the base64-encoded filename and UUID
+- `prefix` (optional): Custom prefix for the file ID (default: `false`)
 
-#### `isValid(fileId: string | FileId): boolean`
-
+#### `isValid(fileId: string | FileId): boolean | Error`
 Validates if a given string or FileId object is a valid file ID.
 
-- Returns: boolean — True when the ID matches the expected structure and contains a valid UUID.
-
 #### `decode(fileId: string | FileId): string`
-
 Extracts the original filename from a file ID.
-
-- Returns: string — The original filename embedded in the file ID.
 
 ### Class API
 
@@ -110,59 +125,46 @@ Extracts the original filename from a file ID.
 Object-oriented interface for file ID operations.
 
 ```typescript
-import FileId from "s3-file-id";
+import FileId, { SnowflakeStrategy } from "s3-file-id";
 
-// Without prefix (default)
+// Without prefix (default UUID)
 const obj = new FileId("notes.txt");
 console.log(obj.id); // "notes.txt|<uuid>" (base64 encoded)
-console.log(obj.decode()); // "notes.txt"
 
-// With optional prefix
-const tmpObj = new FileId("notes.txt", "tmp");
-console.log(tmpObj.id); // "tmp_notes.txt|<uuid>" (base64 encoded)
-console.log(tmpObj.decode()); // "notes.txt"
-
-// With custom prefix
-const customObj = new FileId("notes.txt", "custom");
-console.log(customObj.id); // "custom_notes.txt|<uuid>" (base64 encoded)
+// With prefix and alternative strategy
+const sfObj = new FileId("notes.txt", "tmp", new SnowflakeStrategy({ workerId: 5 }));
+console.log(sfObj.id); // "tmp_notes.txt|<snowflake_id>" (base64 encoded)
 ```
 
 Methods:
 
-- `constructor(filename: string, prefix?: string | false)`: Creates a new FileId instance
+- `constructor(filename: string, prefix?: string | false, strategy?: IIdStrategy)`: Creates a new FileId instance
 - `decode(): string`: Extracts the original filename
-- `static isValid(fileId: string | FileId): boolean`: Validates a file ID
+- `static isValid(fileId: string | FileId): boolean | Error`: Validates a file ID against the UUIDStrategy (backward compatibility)
 
 ## File ID Format
 
-File IDs follow this pattern:
+File IDs follow this pattern before base64 encoding:
 
 ```text
-# Without prefix (default)
-<base64-encoded-filename>|<uuid>
+# UUID Strategy
+<filename>|<uuid>
 
-# With optional prefix
-<prefix>_<base64-encoded-filename>|<uuid>
+# Snowflake Strategy
+<filename>|<17-to-19-digit-numeric>
 ```
 
-Examples (base64 encoded):
+Examples of the final encoded string:
 
-- `photo.png|550e8400-e29b-41d4-a716-446655440000` (no prefix)
-- `tmp_photo.png|550e8400-e29b-41d4-a716-446655440000` (with `tmp_` prefix)
-- `custom_report.pdf|9a1f7f6a-2d1b-4c3a-8b2c-0b8a6b9e9d2f` (with custom prefix)
-
-**Note:** Both prefixed and non-prefixed file IDs are fully supported and interchangeable. The `isValid()` and `decode()` functions accept either format.
+- `dGVzdC50eHR8NTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTYtNDQ2NjU1NDQwMDAw` (no prefix)
+- `tmp_dGVzdC50eHR8NTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTYtNDQ2NjU1NDQwMDAw` (with `tmp_` prefix)
 
 ## Development
 
 ### Running Tests
 
-The project includes a comprehensive test suite in `tests/fileId.test.ts`. Run it using:
+The project includes a comprehensive test suite. Run it using:
 
 ```bash
-# Using npm
-npm test
-
-# Using pnpm
-pnpm test
+bun test
 ```
