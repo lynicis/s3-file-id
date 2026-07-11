@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID } from "crypto";
 
 /**
  *
@@ -33,7 +33,10 @@ function _sanitizeFilename(fileName: string): string {
  * encode("test.txt") // Returns "dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
  * encode("test.txt", "tmp") // Returns "tmp_dGVzdC50eHR8YWJjZGVmMTIzNDU2Nzg="
  */
-export default function encode(file: string, prefix: string | false = false): string {
+export default function encode(
+  file: string,
+  prefix: string | false = false
+): string {
   const sanitized = _sanitizeFilename(file);
   const uuid = randomUUID();
   const combined = `${sanitized}|${uuid}`;

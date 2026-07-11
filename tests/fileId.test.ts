@@ -42,7 +42,9 @@ describe("FileId", () => {
       expect(fileId).toBeDefined();
       expect(typeof fileId.id).toBe("string");
       expect(fileId.id.startsWith("tmp_")).toBe(false);
-      expect(Buffer.from(fileId.id, "base64").toString()).toMatch(/test\.txt\|[a-f0-9-]{36}/);
+      expect(Buffer.from(fileId.id, "base64").toString()).toMatch(
+        /test\.txt\|[a-f0-9-]{36}/
+      );
     });
 
     it("should create a new FileId instance with tmp prefix", () => {

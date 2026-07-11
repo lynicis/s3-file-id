@@ -114,17 +114,17 @@ import FileId from "s3-file-id";
 
 // Without prefix (default)
 const obj = new FileId("notes.txt");
-console.log(obj.id);        // "notes.txt|<uuid>" (base64 encoded)
-console.log(obj.decode());  // "notes.txt"
+console.log(obj.id); // "notes.txt|<uuid>" (base64 encoded)
+console.log(obj.decode()); // "notes.txt"
 
 // With optional prefix
 const tmpObj = new FileId("notes.txt", "tmp");
-console.log(tmpObj.id);     // "tmp_notes.txt|<uuid>" (base64 encoded)
+console.log(tmpObj.id); // "tmp_notes.txt|<uuid>" (base64 encoded)
 console.log(tmpObj.decode()); // "notes.txt"
 
 // With custom prefix
 const customObj = new FileId("notes.txt", "custom");
-console.log(customObj.id);  // "custom_notes.txt|<uuid>" (base64 encoded)
+console.log(customObj.id); // "custom_notes.txt|<uuid>" (base64 encoded)
 ```
 
 Methods:
